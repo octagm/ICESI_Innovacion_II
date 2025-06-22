@@ -23,12 +23,20 @@ def get_mlservice_config(service_id: str) -> MLServiceConfig:
     raise NotImplementedError()
 
 
-def get_mlmodels_configs_map() -> dict[str, MLModelConfig]:
+def get_mlmodels_configs() -> dict[str, MLModelConfig]:
     if WEBAPP_DEMO_MOCK:
-        return demo.get_demo_mlmodels_configs_map()
+        return demo.get_demo_mlmodels_configs_map().values()
 
-    # llamar a API
-    raise NotImplementedError()
+    url = API_URL + "/models/"
+    try:
+        response = httpx.get(url).json()
+    except json.JSONDecodeError as ex:
+        raise RuntimeError("icesi: invalid JSON in response body", ex)
+    except httpx.RequestError as ex:
+        raise RuntimeError(f"icesi: HTTP request failed", ex)
+    
+    mlmodels = [MLModelConfig(**mlmodel) for mlmodel in response]
+    return mlmodels
 
 
 def get_runners_configs() -> list[MLRunnerConfig]:

@@ -17,14 +17,6 @@ st.set_page_config(
 def render_protected():
     runners.render()
     st.markdown("---")
-
-    st.header("Gestión de modelos")
-    if st.button("Agregar modelo"):
-        st.success("modelo creado")
-
-    with st.expander("Listado de modelos"):
-        st.write("listado")
-
     mlmodels.render()
 
 
