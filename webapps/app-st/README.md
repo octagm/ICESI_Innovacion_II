@@ -10,8 +10,7 @@
 
 2. Definir variables de ambiente e iniciar servicio:
     ```bash
-    export ML_IRIS_SERVICE_URL=
-    export ML_MNIST_SERVICE_URL=
+    export API_URL=
     uv run streamlit run src/App.py
     ```
 
@@ -24,18 +23,31 @@
 docker build -t app-st .
 
 # definir variables de ambiente
-ML_IRIS_SERVICE_URL=
-ML_MNIST_SERVICE_URL=
+API_URL=
 
 # ejecutar contenedor
 docker run --rm --name app \
-    -e ML_IRIS_SERVICE_URL="$ML_IRIS_SERVICE_URL" \
-    -e ML_MNIST_SERVICE_URL="$ML_MNIST_SERVICE_URL" \
+    -e API_URL="$API_URL" \
     -p 8501:8501 \
     app-st
 ```
 
-**Consideraciones:**
+**Configuración de variables de ambiente:**
+
+```env
+# variables requeridas
+API_URL=
+
+# variables con valores por defecto
+WEBAPP_AUTH_PROTECTED=true  # habilitado por defecto
+WEBAPP_DEMO_MOCK=false  # deshabilitado por defecto
+
+# variables utilizadas en demo mock
+ML_IRIS_SERVICE_URL=
+ML_MNIST_SERVICE_URL=
+```
+
+**Consideraciones de desarrollo:**
 
 Respecto a relaciones de dependencias entre módulos:
 - `pages.*` usa `components.*` y `states.*`
