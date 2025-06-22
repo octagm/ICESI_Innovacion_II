@@ -15,13 +15,9 @@ st.set_page_config(
 
 @authenticated
 def render_protected():
-    st.header("Gestión de runners")
-    if st.button("Agregar runner"):
-        st.success("runner creado")
-
     runners.render()
-
     st.markdown("---")
+
     st.header("Gestión de modelos")
     if st.button("Agregar modelo"):
         st.success("modelo creado")
