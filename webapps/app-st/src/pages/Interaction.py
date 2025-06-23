@@ -3,7 +3,7 @@ import streamlit as st
 from components.auth.authenticated import authenticated
 import components.mlmodels_selector as mlmodel_selection
 import components.ml as mlcomponents
-from states.app import init_app_state_mapping
+from states.mappings import init_app_state_mapping
 from states.ml import get_mlmodel_type_state_kv
 
 

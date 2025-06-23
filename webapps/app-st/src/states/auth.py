@@ -3,7 +3,7 @@ import streamlit as st
 
 from domain.user import User
 from states import AuthState
-from states.app import get_app_state_mapping
+from states.mappings import get_app_state_mapping
 
 
 class UnauthenticatedException(Exception):

@@ -1,6 +1,6 @@
 import streamlit as st
 
-from states.app import get_app_state_mapping
+from states.mappings import get_app_state_mapping
 
 
 def get_mlmodel_service_url_state_kv() -> tuple[str, str]:

@@ -3,7 +3,7 @@ import streamlit as st
 
 from components.auth.authenticated import authenticated
 from components.manage import mlmodels, runners
-from states.app import init_app_state_mapping
+from states.mappings import init_app_state_mapping
 
 
 st.set_page_config(
