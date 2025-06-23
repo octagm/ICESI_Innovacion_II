@@ -28,7 +28,7 @@ class MLModelsState(BaseModel):
 
 
 class MLRunnersState(BaseModel):
-    configs: dict[str, MLModelConfig] = {}
+    configs: dict[str, MLRunnerConfig] = {}
 
     def get_mlrunner_config(self, mlrunner_id: str) -> MLRunnerConfig:
         return self.configs.get(mlrunner_id)
