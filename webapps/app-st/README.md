@@ -57,10 +57,11 @@ Respecto a relaciones de dependencias entre módulos:
 - `domain.*` no tiene dependencias
 
 Respecto al estado de la aplicación y las solicitudes al servicio API:
-- el estado de la aplicación se actualiza mayoritariamente en cada renderizado a través de las solicitudes a la API, por ejemplo, en el componente de gestión de runners ([webapps/app-st/src/components/manage/runners.py](./webapps/app-st/src/components/manage/runners.py)). En una posible siguiente etapa de desarrollo se puede considerar crear un estado local de la aplicación a través `st.session_state` para aquellos componentes que hagan mayor número de solicitudes, buscando así reducir el tiempo de renderizado.
+- el estado de la aplicación se actualiza mayoritariamente en cada renderizado a través de las solicitudes a la API. Los componentes que hacen mayor número de solicitudes a la API emplean un estado local en `st.session_state` para reducir el tiempo de renderizado, por ejemplo, los componente de gestión de modelos ML ([webapps/app-st/src/components/manage/mlmodels.py](./webapps/app-st/src/components/manage/mlmodels.py)) y de runners ([webapps/app-st/src/components/manage/runners.py](./webapps/app-st/src/components/manage/runners.py)).
 
 Respecto a la serialización de los estados en `st.session_state`:
-- se requiere utilizar el método `model_dump()` de los modelos Pydantic para evitar problemas de serialización de Streamlit (`streamlit.errors.UnserializableSessionStateError`).
+- se requiere utilizar el método `model_dump()` de los modelos Pydantic para evitar problemas de serialización de Streamlit (`streamlit.errors.UnserializableSessionStateError`). NO se debe utilizar el prefijo guión bajo para nombrar los campos de los modelos Pydantic de estados porque serían ignorados por `model_dump()`, es decir, utilizar `configs` en lugar de `_configs`.
+- las reglas de actualizaciones de estado se pueden manejar a través de métodos en las definiciones de clase en [src/states/states.py](src/states/states.py), sin embargo, se debe actualizar explícitamente la serialización almacenada en `st.session_state`, por ejemplo, utilizando la función `set_mlmodels_state()` en [src/states/ml.py](src/states/ml.py) desde [webapps/app-st/src/components/manage/mlmodels.py](./webapps/app-st/src/components/manage/mlmodels.py) cuando se recibe una respuesta de la API con los modelos ML.
 
 Respecto al estado de sesión de la aplicación `st.session_state` y sus correspondientes llaves y valores (keys, values):
 - en [mappings.py.py](./src/states/mappings.py) se definen mappings de llaves de estado de sesión de `streamlit` para centralizar la definición de llaves y reforzar el acceso a ellas a través de propiedades definidas en modelos de `pydantic`.

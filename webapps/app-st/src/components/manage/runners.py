@@ -3,6 +3,7 @@ import streamlit as st
 
 from api.ml import get_runners_configs
 from domain.ml import MLRunnerConfig
+from states.ml import get_mlrunners_state, set_mlrunners_state
 
 
 def map_to_record(runner: MLRunnerConfig) -> dict:
@@ -18,7 +19,12 @@ def render():
     if st.button("Agregar runner"):
         st.success("runner creado")
 
-    runners = get_runners_configs()
+    state = get_mlrunners_state()
+    with st.spinner("Cargando runners..."):
+        runners = get_runners_configs()
+        state.update_mlrunners_configs(runners)
+        set_mlrunners_state(state)
+
     records = map(map_to_record, runners)
     df = pd.DataFrame(records).set_index("id")
     st.table(df)

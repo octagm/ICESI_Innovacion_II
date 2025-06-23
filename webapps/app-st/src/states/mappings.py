@@ -7,7 +7,7 @@ from typing import Callable, Any
 import streamlit as st
 from pydantic import BaseModel
 
-from states import AuthState
+from states import AuthState, MLModelsState, MLRunnersState
 
 
 class StateMap(BaseModel):
@@ -29,10 +29,14 @@ class MLModelSelectionMap(StateMap):
 class AppMap(StateMap):
     auth: str = "auth"
     interaction_mlmodel_selection: MLModelSelectionMap = MLModelSelectionMap()
+    mlmodels: str = "mlmodels"
+    mlrunners: str = "mlrunners"
 
     def get_default_state_values(self):
         return {
             "auth": AuthState().model_dump(),
+            "mlmodels": MLModelsState().model_dump(),
+            "mlrunners": MLRunnersState().model_dump(),
         }
 
 
