@@ -14,6 +14,7 @@ def map_to_record(runner: MLRunnerConfig) -> dict:
     return record
 
 
+@st.fragment
 def render():
     st.header("Gestión de runners")
     if st.button("Agregar runner"):

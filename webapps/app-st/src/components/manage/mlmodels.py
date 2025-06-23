@@ -101,6 +101,7 @@ def render_mlmodel_config_row(mlmodel_id: str, layout_cols_ratios: list[int]):
         st.button("Borrar", on_click=callbacks.on_delete, icon=":material/delete:", key=f"manage.mlmlodel.delete:{mlmodel_id}", type="tertiary")
 
 
+@st.fragment
 def render():
     st.header("Gestión de modelos")
     if st.button("Agregar modelo", icon=":material/add:"):
