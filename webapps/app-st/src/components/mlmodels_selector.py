@@ -1,7 +1,7 @@
 import streamlit as st
 
-from api.entities import MLServiceConfig
 from api.ml import get_mlservices_config_map
+from domain.ml import MLServiceConfig
 from states.ml import get_mlmodel_type_state_kv, get_mlmodel_service_url_state_kv
 
 

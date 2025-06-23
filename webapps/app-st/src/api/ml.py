@@ -3,8 +3,8 @@ import json
 import httpx
 
 import api.demo as demo
-from api.entities import MLModelConfig, MLServiceConfig, MLRunnerConfig
 from config import API_URL, WEBAPP_DEMO_MOCK
+from domain.ml import MLModelConfig, MLServiceConfig, MLRunnerConfig
 
 
 def get_mlservices_config_map() -> dict[str, MLServiceConfig]:

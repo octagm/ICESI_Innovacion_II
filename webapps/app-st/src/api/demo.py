@@ -1,10 +1,10 @@
 import os
 from datetime import datetime
 
+from pydantic import BaseModel
 import streamlit as st
 
-from api.entities import (
-    AppConfig,
+from domain.ml import (
     MLContainerConfig,
     MLModelConfig,
     MLModelRunningState,
@@ -13,6 +13,11 @@ from api.entities import (
     MLServiceConfig,
 )
 
+
+class AppConfig(BaseModel):
+    mlmodels_configs: dict[str, MLModelConfig]
+    mlservices: dict[str, MLServiceConfig]
+    runners: dict[str, MLRunnerConfig]
 
 
 @st.cache_data

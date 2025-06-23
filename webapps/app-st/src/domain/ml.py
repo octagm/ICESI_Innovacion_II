@@ -41,9 +41,3 @@ class MLRunnerConfig(BaseModel):
     connection: str | None = None
     state: MLRunnerState | None = None
     type: str  # e.g., "docker", "kubernetes", etc.
-
-
-class AppConfig(BaseModel):
-    mlmodels_configs: dict[str, MLModelConfig]
-    mlservices: dict[str, MLServiceConfig]
-    runners: dict[str, MLRunnerConfig]

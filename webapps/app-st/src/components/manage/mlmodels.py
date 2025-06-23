@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 
 from api.ml import get_mlmodels_configs
-from api.entities import MLModelConfig
+from domain.ml import MLModelConfig
 
 
 def map_to_record(mlmodel: MLModelConfig) -> dict:

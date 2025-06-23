@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 
 from api.ml import get_runners_configs
-from api.entities import MLRunnerConfig
+from domain.ml import MLRunnerConfig
 
 
 def map_to_record(runner: MLRunnerConfig) -> dict:
