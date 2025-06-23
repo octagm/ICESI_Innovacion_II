@@ -32,7 +32,7 @@ class AppMap(StateMap):
 
     def get_default_state_values(self):
         return {
-            "auth": AuthState()
+            "auth": AuthState().model_dump(),
         }
 
 

@@ -59,6 +59,9 @@ Respecto a relaciones de dependencias entre módulos:
 Respecto al estado de la aplicación y las solicitudes al servicio API:
 - el estado de la aplicación se actualiza mayoritariamente en cada renderizado a través de las solicitudes a la API, por ejemplo, en el componente de gestión de runners ([webapps/app-st/src/components/manage/runners.py](./webapps/app-st/src/components/manage/runners.py)). En una posible siguiente etapa de desarrollo se puede considerar crear un estado local de la aplicación a través `st.session_state` para aquellos componentes que hagan mayor número de solicitudes, buscando así reducir el tiempo de renderizado.
 
+Respecto a la serialización de los estados en `st.session_state`:
+- se requiere utilizar el método `model_dump()` de los modelos Pydantic para evitar problemas de serialización de Streamlit (`streamlit.errors.UnserializableSessionStateError`).
+
 Respecto al estado de sesión de la aplicación `st.session_state` y sus correspondientes llaves y valores (keys, values):
 - en [mappings.py.py](./src/states/mappings.py) se definen mappings de llaves de estado de sesión de `streamlit` para centralizar la definición de llaves y reforzar el acceso a ellas a través de propiedades definidas en modelos de `pydantic`.
 - considerando que `streamlit` requiere inicializar el estado de sesión para cada llave, se puede inicializar como valor por defecto en el mapeo de estado de sesión en [mappings.py.py](./src/states/mappings.py), o manualmente en el componente; ambas opciones son mutuamente excluyentes dado que `streamlit` exige una única inicialización de valor de estado de sesión por llave.
