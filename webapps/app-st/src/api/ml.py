@@ -1,10 +1,15 @@
 import json
+import logging
 
 import httpx
 
 import api.demo as demo
 from config import API_URL, WEBAPP_DEMO_MOCK
 from domain.ml import MLModelConfig, MLServiceConfig, MLRunnerConfig
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def get_mlservices_config_map() -> dict[str, MLServiceConfig]:
@@ -55,6 +60,27 @@ def get_runners_configs() -> list[MLRunnerConfig]:
     return runners
 
 
+def run_mlmodel(mlmodel_id: str) -> MLModelConfig:
+    # TODO support WEBAPP_DEMO_MOCK
+
+    url = API_URL + "/models/" + mlmodel_id + "/run"
+    try:
+        response = httpx.post(url)
+        response.raise_for_status()
+        response_body = response.json()
+        mlmodel = MLModelConfig(**response_body)
+    except json.JSONDecodeError as ex:
+        raise RuntimeError("icesi: invalid JSON in response body", ex)
+    except (httpx.HTTPStatusError, httpx.RequestError) as ex:
+        raise RuntimeError("icesi: request error", ex)
+    except Exception as ex:
+        logger.error(f"icesi: exception: {ex}", exc_info=True)
+        logger.error(ex, exc_info=True)
+        raise Exception("icesi: exception", ex)
+
+    return mlmodel
+
+
 def request_external_mlservice(service_url, resource_path="/predict", **kwargs) -> dict:
     if service_url.endswith("/"):
         service_url = service_url[:-1]
@@ -70,3 +96,24 @@ def request_external_mlservice(service_url, resource_path="/predict", **kwargs) 
         raise RuntimeError(f"icesi: HTTP request failed", ex)
 
     return response
+
+
+def stop_mlmodel(mlmodel_id: str) -> MLModelConfig:
+    # TODO support WEBAPP_DEMO_MOCK
+    
+    url = API_URL + "/models/" + mlmodel_id + "/stop"
+    try:
+        response = httpx.post(url)
+        response.raise_for_status()
+        response_body = response.json()
+        mlmodel = MLModelConfig(**response_body)
+    except json.JSONDecodeError as ex:
+        raise RuntimeError("icesi: invalid JSON in response body", ex)
+    except (httpx.HTTPStatusError, httpx.RequestError) as ex:
+        raise RuntimeError("icesi: request error", ex)
+    except Exception as ex:
+        logger.error(f"icesi: exception: {ex}", exc_info=True)
+        logger.error(ex, exc_info=True)
+        raise Exception("icesi: exception", ex)
+
+    return mlmodel
