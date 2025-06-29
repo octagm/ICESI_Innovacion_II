@@ -3,7 +3,7 @@ import streamlit as st
 
 from components.auth.authenticated import authenticated
 from components.manage import mlmodels, runners
-from states.app import init_app_state_mapping
+from states.mappings import init_app_state_mapping
 
 
 st.set_page_config(
@@ -15,20 +15,8 @@ st.set_page_config(
 
 @authenticated
 def render_protected():
-    st.header("Gestión de runners")
-    if st.button("Agregar runner"):
-        st.success("runner creado")
-
     runners.render()
-
     st.markdown("---")
-    st.header("Gestión de modelos")
-    if st.button("Agregar modelo"):
-        st.success("modelo creado")
-
-    with st.expander("Listado de modelos"):
-        st.write("listado")
-
     mlmodels.render()
 
 

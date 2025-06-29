@@ -10,8 +10,7 @@
 
 2. Definir variables de ambiente e iniciar servicio:
     ```bash
-    export ML_IRIS_SERVICE_URL=
-    export ML_MNIST_SERVICE_URL=
+    export API_URL=
     uv run streamlit run src/App.py
     ```
 
@@ -24,18 +23,31 @@
 docker build -t app-st .
 
 # definir variables de ambiente
-ML_IRIS_SERVICE_URL=
-ML_MNIST_SERVICE_URL=
+API_URL=
 
 # ejecutar contenedor
 docker run --rm --name app \
-    -e ML_IRIS_SERVICE_URL="$ML_IRIS_SERVICE_URL" \
-    -e ML_MNIST_SERVICE_URL="$ML_MNIST_SERVICE_URL" \
+    -e API_URL="$API_URL" \
     -p 8501:8501 \
     app-st
 ```
 
-**Consideraciones:**
+**Configuración de variables de ambiente:**
+
+```env
+# variables requeridas
+API_URL=
+
+# variables con valores por defecto
+WEBAPP_AUTH_PROTECTED=true  # habilitado por defecto
+WEBAPP_DEMO_MOCK=false  # deshabilitado por defecto
+
+# variables utilizadas en demo mock
+ML_IRIS_SERVICE_URL=
+ML_MNIST_SERVICE_URL=
+```
+
+**Consideraciones de desarrollo:**
 
 Respecto a relaciones de dependencias entre módulos:
 - `pages.*` usa `components.*` y `states.*`
@@ -43,6 +55,13 @@ Respecto a relaciones de dependencias entre módulos:
 - `api.*` usa `states.*`
 - `states.*` usa `streamlit` y `domain.*`
 - `domain.*` no tiene dependencias
+
+Respecto al estado de la aplicación y las solicitudes al servicio API:
+- el estado de la aplicación se actualiza mayoritariamente en cada renderizado a través de las solicitudes a la API. Los componentes que hacen mayor número de solicitudes a la API emplean un estado local en `st.session_state` para reducir el tiempo de renderizado, por ejemplo, los componente de gestión de modelos ML ([webapps/app-st/src/components/manage/mlmodels.py](./webapps/app-st/src/components/manage/mlmodels.py)) y de runners ([webapps/app-st/src/components/manage/runners.py](./webapps/app-st/src/components/manage/runners.py)).
+
+Respecto a la serialización de los estados en `st.session_state`:
+- se requiere utilizar el método `model_dump()` de los modelos Pydantic para evitar problemas de serialización de Streamlit (`streamlit.errors.UnserializableSessionStateError`). NO se debe utilizar el prefijo guión bajo para nombrar los campos de los modelos Pydantic de estados porque serían ignorados por `model_dump()`, es decir, utilizar `configs` en lugar de `_configs`.
+- las reglas de actualizaciones de estado se pueden manejar a través de métodos en las definiciones de clase en [src/states/states.py](src/states/states.py), sin embargo, se debe actualizar explícitamente la serialización almacenada en `st.session_state`, por ejemplo, utilizando la función `set_mlmodels_state()` en [src/states/ml.py](src/states/ml.py) desde [webapps/app-st/src/components/manage/mlmodels.py](./webapps/app-st/src/components/manage/mlmodels.py) cuando se recibe una respuesta de la API con los modelos ML.
 
 Respecto al estado de sesión de la aplicación `st.session_state` y sus correspondientes llaves y valores (keys, values):
 - en [mappings.py.py](./src/states/mappings.py) se definen mappings de llaves de estado de sesión de `streamlit` para centralizar la definición de llaves y reforzar el acceso a ellas a través de propiedades definidas en modelos de `pydantic`.

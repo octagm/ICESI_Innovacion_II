@@ -3,16 +3,21 @@ import streamlit as st
 
 from domain.user import User
 from states import AuthState
-from states.app import get_app_state_mapping
+from states.mappings import get_app_state_mapping
 
 
 class UnauthenticatedException(Exception):
     pass
 
 
-def get_jwt() -> str:
+def get_auth_state() -> AuthState:
     asm = get_app_state_mapping()
-    auth = st.session_state[asm.auth]
+    value = st.session_state[asm.auth]
+    return AuthState(**value)
+
+
+def get_jwt() -> str:
+    auth = get_auth_state()
     if auth.is_authenticated:
         return auth.jwt
     else:
@@ -20,13 +25,12 @@ def get_jwt() -> str:
 
 
 def get_is_authenticated() -> bool:
-    asm = get_app_state_mapping()
-    return st.session_state[asm.auth].is_authenticated
+    auth = get_auth_state()
+    return auth.is_authenticated
 
 
 def get_user() -> User:
-    asm = get_app_state_mapping()
-    auth = st.session_state[asm.auth]
+    auth = get_auth_state()
     if auth.is_authenticated:
         return auth.user
     else:
@@ -35,4 +39,4 @@ def get_user() -> User:
 
 def set_auth(state: AuthState) -> None:
     asm = get_app_state_mapping()
-    st.session_state[asm.auth] = state
+    st.session_state[asm.auth] = state.model_dump()
