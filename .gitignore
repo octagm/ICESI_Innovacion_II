@@ -1,6 +1,7 @@
 *.onnx
 .data/
 .models/
+.storage/
 .terraform/
 .terraform.plan
 .terraform.tfstate
