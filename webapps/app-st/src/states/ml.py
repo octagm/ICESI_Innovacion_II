@@ -10,6 +10,20 @@ def get_mlmodels_state() -> MLModelsState:
     return MLModelsState(**value)
 
 
+def get_mlmodel_config_mode_state_kv() -> tuple[str, str]:
+    asm = get_app_state_mapping()
+    key = asm.interaction_mlmodel_selection.mlmodel_config_mode
+    value = st.session_state[key]
+    return (key, value)
+
+
+def get_mlmodel_id_state_kv() -> tuple[str, str]:
+    asm = get_app_state_mapping()
+    key = asm.interaction_mlmodel_selection.mlmodel_id
+    value = st.session_state[key]
+    return (key, value)
+
+
 def get_mlmodel_service_url_state_kv() -> tuple[str, str]:
     asm = get_app_state_mapping()
     key = asm.interaction_mlmodel_selection.mlservice_url
@@ -22,6 +36,16 @@ def get_mlmodel_type_state_kv() -> tuple[str, str]:
     key = asm.interaction_mlmodel_selection.mlmodel_type
     value = st.session_state[key]
     return (key, value)
+
+
+def get_mlrequest_body_sample_from_current_model_id() -> str | None:
+    (_, mlmodel_id) = get_mlmodel_id_state_kv()
+    mlmodels = get_mlmodels_state()
+    mlmodel = mlmodels.get_mlmodel_config(mlmodel_id)
+    if mlmodel is None:
+        return None
+    
+    return mlmodel.request_config.body_sample
 
 
 def get_mlrunners_state() -> MLRunnersState:

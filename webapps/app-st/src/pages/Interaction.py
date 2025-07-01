@@ -26,7 +26,8 @@ def render_protected():
         return
 
     try:
-        mlcomponent = getattr(mlcomponents, mlmodel_type)
+        component_module_name = mlmodel_type.replace("-", "_")
+        mlcomponent = getattr(mlcomponents, component_module_name)
     except AttributeError:
         st.error(f"icesi: no se encontró el componente para el tipo de modelo: {mlmodel_type}")
         return
@@ -39,7 +40,7 @@ def render_protected():
 
 @init_app_state_mapping
 def render():
-    st.title("Interacción con modelos")
+    st.title("Predicción, interacción y consumo de modelos")
 
     render_protected()
 

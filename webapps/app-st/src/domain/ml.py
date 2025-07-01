@@ -1,4 +1,11 @@
+from enum import Enum
+
 from pydantic import BaseModel
+
+
+class MLSelectionMode(Enum):
+    EXTERNAL = "URL externa"
+    MANAGED = "manejada"
 
 
 class MLServiceConfig(BaseModel):
@@ -22,11 +29,17 @@ class MLModelRunningState(BaseModel):
     status: str = "unknown"  # "running", "stopped", "unknown"
 
 
+class MLRequestConfig(BaseModel):
+    body_sample: str | None = None  # ejemplo muestra del cuerpo de solicitud soportado
+    body_uses_request_model: bool = False  # si la solicitud sigue el modelo PredictRequest={config: dict, instances: list[Any] | None}
+
+
 class MLModelConfig(BaseModel):
     container_config: MLContainerConfig
     id: str
     name: str
     runner_id: str
+    request_config: MLRequestConfig
     state: MLModelRunningState
     version: str
 
