@@ -16,11 +16,15 @@ class StateMap(BaseModel):
 
 
 class MLModelSelectionMap(StateMap):
+    mlmodel_config_mode: str = "interaction.mlmodel_selection.mlmodel_config_mode"
+    mlmodel_id: str = "interaction.mlmodel_selection.mlmodel_id"
     mlmodel_type: str = "interaction.mlmodel_selection.mlmodel_type"
     mlservice_url: str = "interaction.mlmodel_selection.mlservice_url"
 
     def get_default_state_values(self):
         return {
+            "mlmodel_config_mode": "manejada",
+            "mlmodel_id": "",
             "mlmodel_type": "",
             "mlservice_url": ""
         }
