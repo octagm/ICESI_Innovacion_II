@@ -17,9 +17,22 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 DATA_DIR: Path = settings["data"]["data_dir"]
+DNS_NETWORK: str = settings["runners"]["docker"]["dns_network"]
 ML_SERVICES_HOST_PORT_DEBUG: str = settings["runners"]["docker"]["host_port_debug"]
 ML_SERVICES_STORAGE_DIR: Path = settings["storage"]["ml_services_dir"]
 MODELS_DIR: Path = settings["mlmodels"]["mlmodels_dir"]
+
+
+def _extract_container_name(mlmodel: MLModelConfig) -> str:
+    # docker: only [a-zA-Z0-9][a-zA-Z0-9_.-] are allowed
+    return mlmodel.id.replace(":", "-")
+
+
+def _list_hosts(container_name, container_ports, host_port_mapping) -> list[str]:
+    hosts_by_dns = [f"http://{container_name}:{port}" for port in container_ports]
+    hosts_by_host_mapping = [f"http://localhost:{port}" for port in host_port_mapping.values()]
+    hosts = hosts_by_dns + hosts_by_host_mapping
+    return hosts
 
 
 def _map_ports(mlmodel: MLModelConfig) -> dict[str, str]:
@@ -103,17 +116,21 @@ class DockerRunner(ContainerRunner):
         self.validate_client()
         self.validate_image_access(mlmodel.container_config.image)
 
+        name = _extract_container_name(mlmodel)
         ports = _map_ports(mlmodel)
         volumes = _map_volumes(mlmodel)
+
+        logger.info(f'volumes={volumes}')
 
         try:
             container = self.client.containers.run(
                 mlmodel.container_config.image,
                 detach=True,
                 environment=mlmodel.container_config.envs,
+                name=name,
+                network=DNS_NETWORK,
                 ports=ports,
-                remove=False,
-                # remove=True,  # Eliminar el contenedor automáticamente después de detenerlo
+                remove=mlmodel.container_config.remove,
                 volumes=volumes,
             )
             self.mlmodels_containers_map.add_entry(mlmodel.id, container.id)
@@ -131,8 +148,10 @@ class DockerRunner(ContainerRunner):
             logger.error(f"{info}; error: {e}")
             raise RuntimeError(info, e)
 
+        hosts = _list_hosts(name, mlmodel.container_config.ports, ports)
+
         return MLModelRunningState(
-            endpoints=[f"http://localhost:{port}/predict" for port in ports.values()],
+            hosts=hosts,
             last_updated=datetime.now().isoformat(),
             runner_metadata={
                 "container_id": container.id,
@@ -166,7 +185,7 @@ class DockerRunner(ContainerRunner):
         self.mlmodels_containers_map.remove_entry(mlmodel.id)
 
         return MLModelRunningState(
-            endpoints=[],
+            hosts=[],
             last_updated=datetime.now().isoformat(),
             status="stopped",
         )

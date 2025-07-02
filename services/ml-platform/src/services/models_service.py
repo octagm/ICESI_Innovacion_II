@@ -72,10 +72,10 @@ class MLModelsService:
             ),
         )
 
-        mlmodel_id = "iris:v1"
+        mlmodel_id = "ejemplo-iris:v1"
         self.configs[mlmodel_id] = MLModelConfig(
             id=mlmodel_id,
-            name="iris",
+            name="ejemplo-iris",
             runner_id="docker",
             version="v1",
             container_config=MLContainerConfig(
@@ -97,14 +97,14 @@ class MLModelsService:
             ),
         )
 
-        mlmodel_id = "mnist:latest"
+        mlmodel_id = "ejemplo-mnist:v1"
         self.configs[mlmodel_id] = MLModelConfig(
             id=mlmodel_id,
-            name="mnist",
+            name="ejemplo-mnist",
             runner_id="docker",
-            version="latest",
+            version="v1",
             container_config=MLContainerConfig(
-                image="mnist:latest",
+                image="ejemplo-mnist:v1",
                 ports=[8000]
             ),
             request_config=MLRequestConfig(
@@ -137,7 +137,7 @@ class MLModelsService:
         return self.configs.get(model_id)
 
 
-    def get_model_running_valid_endpoint(self, model_id: str) -> str:
+    def get_model_running_host(self, model_id: str) -> str:
         """
         Retrieves the running endpoint for a given model ID.
         Raises an HTTPException if the model ID is not found.
@@ -149,14 +149,14 @@ class MLModelsService:
         if config.state.status != "running":
             raise ValueError(f"icesi: modelo no está en ejecución: model_id='{model_id}'")
 
-        if len(config.state.endpoints) == 0:
-            raise ValueError(f"icesi: modelo no tiene endpoints configurados: model_id='{model_id}'")
+        if len(config.state.hosts) == 0:
+            raise ValueError(f"icesi: modelo no tiene hosts configurados: model_id='{model_id}'")
 
-        return config.state.endpoints[0]
+        return config.state.hosts[0]
 
 
     async def predict(self, model_id: str, payload: PredictRequest | None, query: dict | None) -> PredictResponse:
-        model_url = self.get_model_running_valid_endpoint(model_id)
+        model_url = self.get_model_running_host(model_id) + "/predict"
 
         if payload is None:
             pass

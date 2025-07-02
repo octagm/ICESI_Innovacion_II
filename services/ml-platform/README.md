@@ -47,10 +47,18 @@ Consideraciones relevantes:
     # habilitar Docker como ejecutor de contenedores ML
     export RUNNERS_DOCKER_ENABLED=true
 
+    # red DNS de Docker
+    export RUNNERS_DOCKER_DNS_NETWORK=mlnet
+
     # directorios
     export DATA_DIR=.data/
     export MLMODELS_DIR=.mlmodels/
     export STORAGE_DIR=.storage/
+    ```
+
+2. Crear red DNS:
+    ```sh
+    docker network create $RUNNERS_DOCKER_DNS_NETWORK
     ```
 
 3. Iniciar servicio:
@@ -66,6 +74,34 @@ Consideraciones relevantes:
 
 Consideraciones:
 - El archivo `.env` solamente se carga si `ENVIRONMENT=development`
+
+
+**En local utilizando Docker:**
+
+1. Construir imagen:
+    ```sh
+    docker build -t ml-platform:v1 .
+    ```
+
+2. Crear red DNS:
+    ```sh
+    RUNNERS_DOCKER_DNS_NETWORK=mlnet
+
+    docker network create $RUNNERS_DOCKER_DNS_NETWORK
+    ```
+
+3. Ejecutar contenedor:
+    ```sh
+    docker run --rm --name ml-platform \
+        --net=$RUNNERS_DOCKER_DNS_NETWORK \
+        -p 5000:8000 \
+        -e RUNNERS_DOCKER_ENABLED=true \
+        -e RUNNERS_DOCKER_DNS_NETWORK=$RUNNERS_DOCKER_DNS_NETWORK \
+        -e DATA_DIR=${PWD}/.data \
+        -e MODELS_DIR=${PWD}/.models \
+        -e STORAGE_DIR=${PWD}/.storage \
+        ml-platform:v1
+    ```
 
 # Referencias:
 Docker Runner:

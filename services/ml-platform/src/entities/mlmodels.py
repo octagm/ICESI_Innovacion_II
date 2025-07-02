@@ -5,12 +5,13 @@ class MLContainerConfig(BaseModel):
     envs: dict[str, str] | None = None  # variables de ambiente; opcional
     image: str | None  # imagen del contenedor ML; requerido
     ports: list[int]  # puertos expuestos por el contenedor; requerido con al menos 1 puerto
+    remove: bool = True  # eliminar el contenedor automáticamente después de detenerlo
     volumes: list[str] | None = None  # volúmenes para el contenedor; opcional; 
 
 
 class MLModelRunningState(BaseModel):
-    endpoints: list[str] | None = None  # endpoints creados si está en ejecución; opcional
     errors: list[str] | None = None  # errores de estado de ejecución; opcional
+    hosts: list[str] | None = None  # hosts creados si está en ejecución; opcional
     last_updated: str  # fecha en formato ISO
     runner_metadata: dict | None = None  # metadata del ejecutor; opcional
     status: str = "unknown"  # "running", "stopped", "unknown"
