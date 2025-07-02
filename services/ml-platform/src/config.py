@@ -25,6 +25,7 @@ settings = {
     },
     "runners": {
         "docker": {
+            "dns_network": os.getenv("RUNNERS_DOCKER_DNS_NETWORK"),
             "enabled": os.getenv("RUNNERS_DOCKER_ENABLED", "false").lower() == "true",
             "host_port_debug": os.getenv("RUNNERS_DOCKER_HOST_PORT_DEBUG"),  # puerto inicial del host para depurar un contenedor
         }
