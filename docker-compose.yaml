@@ -1,0 +1,30 @@
+services:
+  mlplatform:
+    build: services/ml-platform
+    environment:
+      - DATA_DIR=${PWD}/.data/
+      - MLMODELS_DIR=${PWD}/.models/
+      - RUNNERS_DOCKER_DNS_NETWORK=mlnet
+      - RUNNERS_DOCKER_ENABLED=true
+      - STORAGE_DIR=${PWD}/.storage/
+    networks:
+      - mlnet
+      - webnet
+    ports:
+      - 5000:8000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  webapp:
+    build: webapps/app-st
+    environment:
+      - API_URL=http://mlplatform:8000
+    networks:
+      - webnet
+    ports:
+      - 8501:8501
+
+networks:
+  mlnet:
+    name: mlnet
+  webnet:
